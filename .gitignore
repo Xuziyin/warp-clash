@@ -1,0 +1,14 @@
+# 配置文件（含私钥）
+config-masque*.json
+config.json
+
+# 生成的配置文件
+wgcf-account*.toml
+wgcf-profile*.conf
+clash-warp.yaml
+
+# 临时目录
+Temp/
+
+# 设计/规划文档（非公开）
+docs/superpowers/
