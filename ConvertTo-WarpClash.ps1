@@ -38,24 +38,30 @@ try {
     $nodes = @()
     for ($i = 1; $i -le $Count; $i++) {
         $configFile = if ($Count -eq 1) { "config-masque.json" } else { "config-masque-$i.json" }
-        $needRegister = -not (Test-Path $configFile)
+        $configPath = Join-Path $PSScriptRoot $configFile
+        $needRegister = -not (Test-Path $configPath)
 
         if (-not $needRegister) {
             Write-Host "[$i/$Count] 已有账号文件 $configFile，是否注册新账号？(y/n): " -NoNewline
             $input = Read-Host
             if ($input -eq 'y') {
-                Remove-Item -Path $configFile -Force
+                Remove-Item -Path $configPath -Force
                 $needRegister = $true
             }
         }
 
         if ($needRegister) {
             Write-Host "[$i/$Count] 注册新 Warp 账号..."
-            "y" | & $UsquePath register -c (Join-Path $PSScriptRoot $configFile) 2>&1 | Out-Null
-            if (-not (Test-Path $configFile)) { Write-Error "MASQUE 注册失败"; exit 1 }
+            $regOutput = & $UsquePath register -c $configPath --accept-tos 2>&1
+            if (-not (Test-Path $configPath)) {
+                Write-Host "`n注册输出:"
+                $regOutput | ForEach-Object { Write-Host $_ }
+                Write-Error "MASQUE 注册失败（请检查网络或稍后再试）"
+                exit 1
+            }
         }
 
-        $cfg = Get-Content -Raw -Path $configFile | ConvertFrom-Json
+        $cfg = Get-Content -Raw -Path $configPath | ConvertFrom-Json
         $nodes += @{
             Name       = "Warp-Masque-$i"
             Server     = $cfg.endpoint_v4
