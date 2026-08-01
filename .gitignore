@@ -12,3 +12,9 @@ Temp/
 
 # 设计/规划文档（非公开）
 docs/superpowers/
+
+# 博客文章
+blog.md
+
+# 打包文件
+*.zip
